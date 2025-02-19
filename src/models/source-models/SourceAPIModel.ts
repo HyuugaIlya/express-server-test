@@ -1,3 +1,5 @@
+import { ValidationError } from "express-validator"
+
 export type TSourceAPIModel = {
     /**
     * id  of the source from database
@@ -6,5 +8,5 @@ export type TSourceAPIModel = {
     /**
     * title of the source from database
     */
-    title: string
+    title: string,
 }

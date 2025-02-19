@@ -20,6 +20,10 @@ import {
     TRequestParamsNBody
 } from '../../types'
 
+import { body } from 'express-validator'
+
+import { inputValidationMiddleware } from '../../middleware/input-validation-middleware'
+
 
 const mapToAPISourceModel = (source: TSource): TSourceAPIModel => ({
     id: source.id,
@@ -29,10 +33,13 @@ const mapToAPISourceModel = (source: TSource): TSourceAPIModel => ({
 export const getSourcesRouter = () => {
     const router = express.Router()
 
+    const titleValidation = body('title').trim()
+        .isLength({ min: 3, max: 20 })
+        .withMessage('Title is required and length should be from 3 to 25 symbols')
+
     router
         .get('/', (req: TRequestQuery<TSourceQueryModel>, res: Response<TSourceAPIModel[]>) => {
             const sources = sourcesRepository.getSources(req.query)
-
             res.json(sources.map(mapToAPISourceModel))
         })
         .get('/:id(\\d+)', (req: TRequestParams<TSourceURIParamsModel>, res: Response<TSourceAPIModel>) => {
@@ -44,33 +51,31 @@ export const getSourcesRouter = () => {
 
             res.json(mapToAPISourceModel(source))
         })
-        .post('/', (req: TRequestBody<TSourceCreateModel>, res: Response<TSourceAPIModel>) => {
-            if (!req.body.title) {
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST)
-                return
+        .post(
+            '/',
+            titleValidation,
+            inputValidationMiddleware,
+            (req: TRequestBody<TSourceCreateModel>, res: Response<TSourceAPIModel>) => {
+                const newSource = sourcesRepository.createSource(req.body.title)
+                res.status(HTTP_STATUSES.CREATED).json(mapToAPISourceModel(newSource))
             }
+        )
+        .put(
+            '/:id(\\d+)',
+            titleValidation,
+            inputValidationMiddleware,
+            (
+                req: TRequestParamsNBody<TSourceURIParamsModel, TSourceUpdateModel>,
+                res: Response<TSourceAPIModel>
+            ) => {
+                const updatedSource = sourcesRepository.updateSource(+req.params.id, req.body.title)
+                if (updatedSource) {
+                    res.status(HTTP_STATUSES.OK).json(mapToAPISourceModel(updatedSource))
+                    return
+                }
 
-            const newSource = sourcesRepository.createSource(req.body.title)
-
-            res.status(HTTP_STATUSES.CREATED).json(mapToAPISourceModel(newSource))
-        })
-        .put('/:id(\\d+)', (
-            req: TRequestParamsNBody<TSourceURIParamsModel, TSourceUpdateModel>,
-            res: Response<TSourceAPIModel>
-        ) => {
-            if (!req.body.title) {
-                res.sendStatus(HTTP_STATUSES.BAD_REQUEST)
-                return
-            }
-
-            const updatedSource = sourcesRepository.updateSource(+req.params.id, req.body.title)
-            if (updatedSource) {
-                res.status(HTTP_STATUSES.OK).json(mapToAPISourceModel(updatedSource))
-                return
-            }
-
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND)
-        })
+                res.sendStatus(HTTP_STATUSES.NOT_FOUND)
+            })
         .delete('/:id', (req: TRequestParams<TSourceURIParamsModel>, res) => {
             sourcesRepository.deleteSource(+req.params.id)
 
