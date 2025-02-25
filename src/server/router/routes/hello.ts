@@ -7,8 +7,8 @@ export const getHelloRouter = () => {
     const router = express.Router()
 
     router
-        .get(['/', '/hello'], (_, res: Response<{ title: string }>) => {
-            const hello = helloRepository.getHello()
+        .get(['/', '/hello'], async (_, res: Response<{ title: string }>) => {
+            const hello = await helloRepository.getHello()
             res.json(hello)
         })
 

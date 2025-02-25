@@ -3,7 +3,7 @@ import { db, TSource } from '../db'
 import { TSourceQueryModel } from '../models'
 
 export const sourcesRepository = {
-    getSources(query: TSourceQueryModel) {
+    async getSources(query: TSourceQueryModel): Promise<TSource[]> {
         const length = Object.keys(query).length
 
         if (length) {
@@ -25,11 +25,11 @@ export const sourcesRepository = {
         return db.sources
     },
 
-    getSourceById(id: number) {
-        return db.sources.find(s => s.id === id)
+    async getSourceById(id: number): Promise<TSource | null> {
+        return db.sources.find(s => s.id === id) ?? null
     },
 
-    createSource(title: string): TSource {
+    async createSource(title: string): Promise<TSource> {
         const newSource = {
             id: +(new Date()),
             title
@@ -38,16 +38,16 @@ export const sourcesRepository = {
         return newSource
     },
 
-    updateSource(id: number, title: string) {
+    async updateSource(id: number, title: string): Promise<TSource | null> {
         const source = db.sources.find(source => source.id === id)
         if (!source) {
-            return
+            return null
         }
         source.title = title
         return source
     },
 
-    deleteSource(id: number) {
+    async deleteSource(id: number): Promise<void> {
         db.sources = db.sources.filter(source => source.id !== id)
     },
 }

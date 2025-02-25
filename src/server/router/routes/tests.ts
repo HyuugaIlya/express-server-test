@@ -1,7 +1,7 @@
 import express from 'express'
 import { TDatabase } from '../../db'
 
-import { HTTP_STATUSES } from '../../utils'
+import { HTTP_STATUSES } from '../../../utils'
 
 export const getTestsRouter = (db: TDatabase) => {
     const router = express.Router()

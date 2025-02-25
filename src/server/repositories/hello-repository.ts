@@ -1,7 +1,10 @@
 import { db } from '../db'
 
+type THello = {
+    title: string
+}
 export const helloRepository = {
-    getHello() {
+    async getHello(): Promise<THello> {
         return { title: db.hello.title }
     },
 }

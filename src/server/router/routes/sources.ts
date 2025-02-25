@@ -38,12 +38,12 @@ export const getSourcesRouter = () => {
         .withMessage('Title is required and length should be from 3 to 25 symbols')
 
     router
-        .get('/', (req: TRequestQuery<TSourceQueryModel>, res: Response<TSourceAPIModel[]>) => {
-            const sources = sourcesRepository.getSources(req.query)
+        .get('/', async (req: TRequestQuery<TSourceQueryModel>, res: Response<TSourceAPIModel[]>) => {
+            const sources = await sourcesRepository.getSources(req.query)
             res.json(sources.map(mapToAPISourceModel))
         })
-        .get('/:id(\\d+)', (req: TRequestParams<TSourceURIParamsModel>, res: Response<TSourceAPIModel>) => {
-            const source = sourcesRepository.getSourceById(+req.params.id)
+        .get('/:id(\\d+)', async (req: TRequestParams<TSourceURIParamsModel>, res: Response<TSourceAPIModel>) => {
+            const source = await sourcesRepository.getSourceById(+req.params.id)
             if (!source) {
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND)
                 return
@@ -55,8 +55,8 @@ export const getSourcesRouter = () => {
             '/',
             titleValidation,
             inputValidationMiddleware,
-            (req: TRequestBody<TSourceCreateModel>, res: Response<TSourceAPIModel>) => {
-                const newSource = sourcesRepository.createSource(req.body.title)
+            async (req: TRequestBody<TSourceCreateModel>, res: Response<TSourceAPIModel>) => {
+                const newSource = await sourcesRepository.createSource(req.body.title)
                 res.status(HTTP_STATUSES.CREATED).json(mapToAPISourceModel(newSource))
             }
         )
@@ -64,11 +64,11 @@ export const getSourcesRouter = () => {
             '/:id(\\d+)',
             titleValidation,
             inputValidationMiddleware,
-            (
+            async (
                 req: TRequestParamsNBody<TSourceURIParamsModel, TSourceUpdateModel>,
                 res: Response<TSourceAPIModel>
             ) => {
-                const updatedSource = sourcesRepository.updateSource(+req.params.id, req.body.title)
+                const updatedSource = await sourcesRepository.updateSource(+req.params.id, req.body.title)
                 if (updatedSource) {
                     res.status(HTTP_STATUSES.OK).json(mapToAPISourceModel(updatedSource))
                     return
@@ -76,8 +76,8 @@ export const getSourcesRouter = () => {
 
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND)
             })
-        .delete('/:id', (req: TRequestParams<TSourceURIParamsModel>, res) => {
-            sourcesRepository.deleteSource(+req.params.id)
+        .delete('/:id', async (req: TRequestParams<TSourceURIParamsModel>, res) => {
+            await sourcesRepository.deleteSource(+req.params.id)
 
             res.sendStatus(HTTP_STATUSES.NO_CONTENT)
         })
@@ -85,14 +85,14 @@ export const getSourcesRouter = () => {
     return router
 }
 
-// export const getBooksRouter = (db: TDatabase) => {
+// export const getBooksRouter = () => {
 //     const router = express.Router()
 
 //     router
-//         .get('/:id(\\d+)', (req: TRequestParams<TSourceURIParamsModel>, res: Response<{ title: string }>) => {
+//         .get('/:id(\\d+)', async (req: TRequestParams<TSourceURIParamsModel>, res: Response<{ title: string }>) => {
 //             res.json({ title: `book id: ${req.params.id}` })
 //         })
-//         .get('/books', (req: TRequestQuery<TSourceQueryModel>, res: Response<{ title: string }>) => {
+//         .get('/books', async (req: TRequestQuery<TSourceQueryModel>, res: Response<{ title: string }>) => {
 
 //             res.json({ title: 'books' })
 //         })
