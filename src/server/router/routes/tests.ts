@@ -1,7 +1,7 @@
 import express from 'express'
 import { TDatabase } from '../../db'
 
-import { HTTP_STATUSES } from '../../../utils'
+import { HTTP_STATUSES } from '../../utils'
 
 export const getTestsRouter = (db: TDatabase) => {
     const router = express.Router()
@@ -9,7 +9,7 @@ export const getTestsRouter = (db: TDatabase) => {
     //TEMPORARY SOLUTION!!! FOR TESTING PURPOSES ONLY!!!
     router
         .delete('/data', (_, res) => {
-            db.sources = []
+            db.sources.data = []
 
             res.sendStatus(HTTP_STATUSES.NO_CONTENT)
         })

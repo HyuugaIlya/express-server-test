@@ -34,8 +34,8 @@ export const getSourcesRouter = () => {
     const router = express.Router()
 
     const titleValidation = body('title').trim()
-        .isLength({ min: 3, max: 20 })
-        .withMessage('Title is required and length should be from 3 to 25 symbols')
+        .isLength({ min: 3, max: 40 })
+    // .withMessage('Title is required and length should be from 3 to 25 symbols')
 
     router
         .get('/', async (req: TRequestQuery<TSourceQueryModel>, res: Response<TSourceAPIModel[]>) => {

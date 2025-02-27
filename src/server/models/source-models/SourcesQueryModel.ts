@@ -6,5 +6,5 @@ export type TSourceQueryModel = {
     /**
     * sort options of the search query
     */
-    sort: 'asc' | 'desc' | ''
+    sort: 'asc' | 'desc'
 }
