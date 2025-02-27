@@ -1,14 +1,8 @@
 import {
     db,
-    dbF,
     TDatabase,
     TSource
 } from "."
-
-const database = async function () {
-    const result = await dbF()
-    return result
-}
 
 type TDBSource = {
     id?: number,
@@ -18,8 +12,7 @@ export class DBClient {
     private _db: any
 
     constructor() {
-
-        this._db = database()
+        this._db = db
 
         this._db.collection = (rep: keyof TDatabase) => {
             return this._db[rep]
@@ -29,32 +22,37 @@ export class DBClient {
             if (Array.isArray(this._db[key].data)) {
 
                 this._db[key].toArray = function (): Promise<TSource[]> {
-                    if (this.isFind) {
-                        return this.find
-                    }
-
                     return this.data
                 }
 
                 this._db[key].find = function (obj?: TDBSource): Promise<{ data: TSource[] } | null> {
-                    this.isFind = false
+                    let result = this.data
                     if (obj && (obj.id || obj.title)) {
-                        this.isFind = true
-                        this.find = this.data.filter((el: TSource) => el.id === obj.id || obj.title && el.title.includes(obj.title))
+                        result = [...this.data].filter((el: TSource) => el.id === obj.id || obj.title?.length && el.title.includes(obj.title))
                     }
-                    return this
+                    return {
+                        ...this,
+                        data: result
+                    }
                 }
 
-
                 this._db[key].sort = function (str?: 'asc' | 'desc'): Promise<{ data: TSource[] } | null> {
+                    let result = this.data
+
                     if (str) {
                         if (str === 'asc') {
-                            this.data = this.data.sort((a: TSource, b: TSource) => a.title > b.title ? 1 : -1)
+                            result = [...this.data].sort((a: TSource, b: TSource) => a.title > b.title ? 1 : -1)
                         } else if (str === 'desc') {
-                            this.sort = this.data.sort((a: TSource, b: TSource) => a.title < b.title ? 1 : -1)
+                            result = [...this.data].sort((a: TSource, b: TSource) => a.title < b.title ? 1 : -1)
                         }
                     }
-                    return this ?? null
+
+                    return this.data
+                        ? {
+                            ...this,
+                            data: result
+                        }
+                        : null
                 }
 
                 this._db[key].findOne = function (obj?: TSource): Promise<TSource | null> {
@@ -86,7 +84,7 @@ export class DBClient {
                 // this._db[key].updateMany = (get: {id: number}[], set: {title: string}[]): Promise<TSource[] | null> => {
                 //     const result: TSource[] = []
                 //     get.map((obj, i) => {
-                //         let source = this._db[key].data.find((el: TSource) => el.id === obj.id)
+                //         let source = this.data.find((el: TSource) => el.id === obj.id)
                 //         if (source) {
                 //             source.title = set[i].title
                 //             result.push(source)
