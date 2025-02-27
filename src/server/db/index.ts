@@ -1,8 +1,3 @@
-type THello = {
-    id: number
-    title: string
-}
-
 export type TSource = {
     id: number
     title: string
@@ -10,7 +5,7 @@ export type TSource = {
 
 export type TDatabase = {
     hello: {
-        data: THello[]
+        data: TSource[]
     }
     sources: {
         data: TSource[]

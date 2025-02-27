@@ -1,10 +1,11 @@
 import { client } from '../app'
 import { db, TSource } from '../db'
+import { TDatabaseSource } from '../db/db-client'
 
 import { TSourceQueryModel } from '../models'
 
 export const sourcesRepository = {
-    async getSources(query: TSourceQueryModel): Promise<TSource[]> {
+    async getSources(query: TSourceQueryModel): Promise<TDatabaseSource[] | null> {
         const length = Object.keys(query).length
 
         if (length) {
