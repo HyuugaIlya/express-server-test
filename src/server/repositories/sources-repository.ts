@@ -1,5 +1,4 @@
-import { client } from '../app'
-import { TSource } from '../db'
+import { client, TSource } from '../db'
 
 import { TSourceQueryModel } from '../models'
 
@@ -28,14 +27,14 @@ export const sourcesRepository = {
             title
         }
 
-        return client.db('main').collection('sources').insertOne(newSource)
+        return await client.db('main').collection('sources').insertOne(newSource)
     },
 
     async updateSource(id: number, title: string): Promise<TSource | null> {
-        return client.db('main').collection('sources').updateOne({ id }, { title })
+        return await client.db('main').collection('sources').updateOne({ id }, { title })
     },
 
     async deleteSource(id: number): Promise<void> {
-        client.db('main').collection('sources').deleteOne({ id })
+        await client.db('main').collection('sources').deleteOne({ id })
     },
 }

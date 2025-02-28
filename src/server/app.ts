@@ -1,20 +1,17 @@
-import express, { Express, Request, Response, NextFunction } from 'express'
-
-import { db } from '../server/db'
-
+import express, {
+    Express,
+    Request,
+    Response,
+    NextFunction
+} from 'express'
 
 import {
     getSourcesRouter,
-    getHelloRouter,
-    getTestsRouter,
-    // getBooksRouter
+    getHelloRouter
 } from '../server/router'
-import { DBClient } from './db/db-client'
 
 export const app: Express = express()
 app.use(express.json({}))
-
-export const client = new DBClient()
 
 let reqCount = 0
 const reqCountMiddleware = (
@@ -30,5 +27,3 @@ app.use(reqCountMiddleware)
 
 app.use('/', getHelloRouter())
 app.use('/sources', getSourcesRouter())
-app.use('/__tests__', getTestsRouter(db.main))
-// app.use('/my', getBooksRouter())

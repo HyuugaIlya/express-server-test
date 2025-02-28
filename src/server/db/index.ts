@@ -1,3 +1,5 @@
+import { DBClient } from "./db-client"
+
 export type TSource = {
     id: number
     title: string
@@ -9,10 +11,10 @@ export type TDBCollection = {
     }
 }
 
-type TDataBase = {
+export type TDatabase = {
     [key: string]: TDBCollection
 }
-export const db: TDataBase = {
+export const db: TDatabase = {
     main: {
         hello: {
             data: [
@@ -28,4 +30,21 @@ export const db: TDataBase = {
             ]
         }
     },
+}
+
+export const fetchDB = async (newDb?: TDatabase): Promise<TDatabase> => {
+    return newDb
+        ? Promise.resolve(newDb)
+        : Promise.resolve(db)
+}
+
+export const client = new DBClient()
+
+export async function runDb() {
+    try {
+        await client.connect()
+        console.log('Successfully connected!')
+    } catch {
+        await client.close()
+    }
 }
