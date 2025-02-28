@@ -30,5 +30,5 @@ app.use(reqCountMiddleware)
 
 app.use('/', getHelloRouter())
 app.use('/sources', getSourcesRouter())
-app.use('/__tests__', getTestsRouter(db))
+app.use('/__tests__', getTestsRouter(db.main))
 // app.use('/my', getBooksRouter())

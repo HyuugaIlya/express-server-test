@@ -6,6 +6,6 @@ type THello = {
 }
 export const helloRepository = {
     async getHello(): Promise<THello[]> {
-        return db.hello.data
+        return db.main.hello.data
     },
 }

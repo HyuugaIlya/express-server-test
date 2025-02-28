@@ -3,27 +3,29 @@ export type TSource = {
     title: string
 }
 
-export type TDatabase = {
-    hello: {
-        data: TSource[]
-    }
-    sources: {
+export type TDBCollection = {
+    [key: string]: {
         data: TSource[]
     }
 }
 
-export const db = {
-    hello: {
-        data: [
-            { id: 1, title: 'Hello World!' }
-        ]
+type TDataBase = {
+    [key: string]: TDBCollection
+}
+export const db: TDataBase = {
+    main: {
+        hello: {
+            data: [
+                { id: 1, title: 'Hello World!' }
+            ]
+        },
+        sources: {
+            data: [
+                { id: 1, title: 'express' },
+                { id: 2, title: 'server' },
+                { id: 3, title: 'typescript' },
+                { id: 4, title: 'project' },
+            ]
+        }
     },
-    sources: {
-        data: [
-            { id: 1, title: 'express' },
-            { id: 2, title: 'server' },
-            { id: 3, title: 'typescript' },
-            { id: 4, title: 'project' },
-        ]
-    }
 }

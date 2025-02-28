@@ -1,9 +1,9 @@
 import express from 'express'
-import { TDatabase } from '../../db'
+import { TDBCollection } from '../../db'
 
 import { HTTP_STATUSES } from '../../utils'
 
-export const getTestsRouter = (db: TDatabase) => {
+export const getTestsRouter = (db: TDBCollection) => {
     const router = express.Router()
 
     //TEMPORARY SOLUTION!!! FOR TESTING PURPOSES ONLY!!!

@@ -40,6 +40,10 @@ export const getSourcesRouter = () => {
     router
         .get('/', async (req: TRequestQuery<TSourceQueryModel>, res: Response<TSourceAPIModel[]>) => {
             const sources = await sourcesRepository.getSources(req.query)
+            if (!sources) {
+                res.sendStatus(HTTP_STATUSES.NOT_FOUND)
+                return
+            }
             res.json(sources.map(mapToAPISourceModel))
         })
         .get('/:id(\\d+)', async (req: TRequestParams<TSourceURIParamsModel>, res: Response<TSourceAPIModel>) => {
