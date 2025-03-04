@@ -1,25 +1,25 @@
 import { DBClient } from "./db-client"
 
-export type TSource = {
-    id: number
-    title: string
-}
+export type TSource<T = any> = Record<string | number, T>
 
-export type TDBCollection = {
-    [key: string]: {
-        data: TSource[]
-    }
+export type TDBCollection<T = any> = {
+    data: TSource<T>[],
+    totalCount: number
+}
+export type TDBCollections = {
+    [key: string]: TDBCollection
 }
 
 export type TDatabase = {
-    [key: string]: TDBCollection
+    [key: string]: TDBCollections
 }
-export const db: TDatabase = {
+export let db: TDatabase = {
     main: {
         hello: {
             data: [
                 { id: 1, title: 'Hello World!' }
-            ]
+            ],
+            totalCount: 1
         },
         sources: {
             data: [
@@ -27,15 +27,20 @@ export const db: TDatabase = {
                 { id: 2, title: 'server' },
                 { id: 3, title: 'typescript' },
                 { id: 4, title: 'project' },
-            ]
+            ],
+            totalCount: 4
         }
     },
 }
 
 export const fetchDB = async (newDb?: TDatabase): Promise<TDatabase> => {
-    return newDb
-        ? Promise.resolve(newDb)
-        : Promise.resolve(db)
+    if (newDb) db = structuredClone(newDb)
+
+    return await new Promise((res) => {
+        setTimeout(() => {
+            res(db)
+        }, 5000)
+    })
 }
 
 export const client = new DBClient()

@@ -1,11 +1,7 @@
-import { db } from '../db'
+import { db, TSource } from '../db'
 
-type THello = {
-    id: number
-    title: string
-}
 export const helloRepository = {
-    async getHello(): Promise<THello[]> {
+    async getHello(): Promise<TSource[]> {
         return db.main.hello.data
     },
 }
