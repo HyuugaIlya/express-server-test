@@ -1,7 +1,8 @@
-import { db, TSource } from '../db'
+import { collections, TSource } from '../db'
 
 export const helloRepository = {
     async getHello(): Promise<TSource[]> {
-        return db.main.hello.data
+        const result = await collections.hello.find({})
+        return result.toArray()
     },
 }

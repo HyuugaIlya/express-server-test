@@ -2,7 +2,7 @@ import express, { Response } from 'express'
 
 import { TSource } from '../../db'
 
-import { sourcesService } from '../../services/sources-service'
+import { testsRepository } from '../../repositories/tests-repository'
 
 import { HTTP_STATUSES } from '../../utils'
 
@@ -30,7 +30,7 @@ const mapToAPISourceModel = (source: TSource): TSourceAPIModel => ({
     title: source.title
 })
 
-export const getSourcesRouter = () => {
+export const getTestsRouter = () => {
     const router = express.Router()
 
     const titleValidation = body('title').trim()
@@ -39,7 +39,7 @@ export const getSourcesRouter = () => {
 
     router
         .get('/', async (req: TRequestQuery<TSourceQueryModel>, res: Response<TSourceAPIModel[]>) => {
-            const sources = await sourcesService.getSources(req.query)
+            const sources = await testsRepository.getSources(req.query)
             if (!sources) {
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND)
                 return
@@ -47,7 +47,7 @@ export const getSourcesRouter = () => {
             res.json(sources.map(mapToAPISourceModel))
         })
         .get('/:id(\\d+)', async (req: TRequestParams<TSourceURIParamsModel>, res: Response<TSourceAPIModel>) => {
-            const source = await sourcesService.getSourceById(+req.params.id)
+            const source = await testsRepository.getSourceById(+req.params.id)
             if (!source) {
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND)
                 return
@@ -60,7 +60,7 @@ export const getSourcesRouter = () => {
             titleValidation,
             inputValidationMiddleware,
             async (req: TRequestBody<TSourceCreateModel>, res: Response<TSourceAPIModel>) => {
-                const newSource = await sourcesService.createSource(req.body.title)
+                const newSource = await testsRepository.createSource(req.body.title)
                 res.status(HTTP_STATUSES.CREATED).json(mapToAPISourceModel(newSource))
             }
         )
@@ -72,8 +72,7 @@ export const getSourcesRouter = () => {
                 req: TRequestParamsNBody<TSourceURIParamsModel, TSourceUpdateModel>,
                 res: Response<TSourceAPIModel>
             ) => {
-                const updatedSource = await sourcesService.updateSource(+req.params.id, req.body.title)
-
+                const updatedSource = await testsRepository.updateSource(+req.params.id, req.body.title)
                 if (updatedSource) {
                     res.status(HTTP_STATUSES.OK).json(mapToAPISourceModel(updatedSource))
                     return
@@ -82,25 +81,10 @@ export const getSourcesRouter = () => {
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND)
             })
         .delete('/:id', async (req: TRequestParams<TSourceURIParamsModel>, res) => {
-            await sourcesService.deleteSource(+req.params.id)
+            await testsRepository.deleteSource(+req.params.id)
 
             res.sendStatus(HTTP_STATUSES.NO_CONTENT)
         })
 
     return router
 }
-
-// export const getBooksRouter = () => {
-//     const router = express.Router()
-
-//     router
-//         .get('/:id(\\d+)', async (req: TRequestParams<TSourceURIParamsModel>, res: Response<{ title: string }>) => {
-//             res.json({ title: `book id: ${req.params.id}` })
-//         })
-//         .get('/books', async (req: TRequestQuery<TSourceQueryModel>, res: Response<{ title: string }>) => {
-
-//             res.json({ title: 'books' })
-//         })
-
-//     return router
-// }

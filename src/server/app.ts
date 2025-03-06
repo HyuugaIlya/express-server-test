@@ -7,7 +7,8 @@ import express, {
 
 import {
     getSourcesRouter,
-    getHelloRouter
+    getHelloRouter,
+    getTestsRouter
 } from '../server/router'
 
 export const app: Express = express()
@@ -27,3 +28,4 @@ app.use(reqCountMiddleware)
 
 app.use('/', getHelloRouter())
 app.use('/sources', getSourcesRouter())
+app.use('/__tests__', getTestsRouter())

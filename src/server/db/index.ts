@@ -1,9 +1,10 @@
+import { TResult } from "../repositories/sources-repository"
 import { DBClient } from "./db-client"
 
-export type TSource<T = any> = Record<string | number, T>
+export type TSource = Record<string | number, any>
 
-export type TDBCollection<T = any> = {
-    data: TSource<T>[],
+export type TDBCollection<T = TSource> = {
+    data: T[],
     totalCount: number
 }
 export type TDBCollections = {
@@ -39,7 +40,7 @@ export const fetchDB = async (newDb?: TDatabase): Promise<TDatabase> => {
     return await new Promise((res) => {
         setTimeout(() => {
             res(db)
-        }, 5000)
+        }, 500)
     })
 }
 
@@ -52,4 +53,9 @@ export async function runDb() {
     } catch {
         await client.close()
     }
+}
+
+export const collections = {
+    sources: client.db('main').collection<TResult>('sources'),
+    hello: client.db('main').collection<TResult>('hello'),
 }

@@ -1,40 +1,47 @@
-import { client, TSource } from '../db'
+import { collections } from '../db'
 
 import { TSourceQueryModel } from '../models'
 
+export type TResult = {
+    id: number,
+    title: string
+}
 export const sourcesRepository = {
-    async getSources(query: TSourceQueryModel): Promise<TSource[] | null> {
+    async getSources(query: TSourceQueryModel): Promise<TResult[] | null> {
         const length = Object.keys(query).length
+        let filter = {}
 
         if (length) {
-            let result = client.db('main').collection('sources')
-            result = query.title ? result.find({ title: query.title }) : result.find({})
-            result = query.sort ? result.sort(query.sort) : result
-
-            return result.toArray()
+            filter = {
+                ...filter,
+                title: query.title,
+                sort: query.sort
+            }
         }
 
-        return client.db('main').collection('sources').find({}).toArray()
+        const result = await collections.sources.find(filter)
+        return result.toArray()
     },
 
-    async getSourceById(id: number): Promise<TSource | null> {
-        return client.db('main').collection('sources').findOne({ id })
+    async getSourceById(id: number): Promise<TResult | null> {
+        return await collections.sources.findOne({ id })
     },
 
-    async createSource(title: string): Promise<TSource> {
-        const newSource = {
-            id: +(new Date()),
-            title
+    async createSource(newSource: TResult): Promise<TResult> {
+        return await collections.sources.insertOne(newSource)
+    },
+
+    async updateSource(id: number, title: string): Promise<TResult | null> {
+        const isUpdated = await collections.sources.updateOne({ id }, { title })
+
+        if (isUpdated) {
+            return await collections.sources.findOne({ id })
         }
 
-        return await client.db('main').collection('sources').insertOne(newSource)
-    },
-
-    async updateSource(id: number, title: string): Promise<TSource | null> {
-        return await client.db('main').collection('sources').updateOne({ id }, { title })
+        return null
     },
 
     async deleteSource(id: number): Promise<void> {
-        await client.db('main').collection('sources').deleteOne({ id })
+        await collections.sources.deleteOne({ id })
     },
 }
