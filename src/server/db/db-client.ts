@@ -89,7 +89,7 @@ export class DBClient {
                         console.log(error)
                         return {
                             toArray: this._db.methods<T>().toArray,
-                            data: []
+                            data: [{ error: error }]
                         } as TCollection<T>
                     }
                 },
@@ -134,7 +134,9 @@ export class DBClient {
                         return obj
                     } catch (error) {
                         console.log(error)
-                        return {} as T
+                        return {
+                            error: error
+                        } as T
                     }
                 },
 

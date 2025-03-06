@@ -3,6 +3,7 @@ import express, { Response } from 'express'
 import { TSource } from '../../db'
 
 import { sourcesService } from '../../services/sources-service'
+import { sourcesQueryRepository } from '../../repositories/sources-query-repository'
 
 import { HTTP_STATUSES } from '../../utils'
 
@@ -39,7 +40,7 @@ export const getSourcesRouter = () => {
 
     router
         .get('/', async (req: TRequestQuery<TSourceQueryModel>, res: Response<TSourceAPIModel[]>) => {
-            const sources = await sourcesService.getSources(req.query)
+            const sources = await sourcesQueryRepository.getSources(req.query)
             if (!sources) {
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND)
                 return
@@ -47,7 +48,7 @@ export const getSourcesRouter = () => {
             res.json(sources.map(mapToAPISourceModel))
         })
         .get('/:id(\\d+)', async (req: TRequestParams<TSourceURIParamsModel>, res: Response<TSourceAPIModel>) => {
-            const source = await sourcesService.getSourceById(+req.params.id)
+            const source = await sourcesQueryRepository.getSourceById(+req.params.id)
             if (!source) {
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND)
                 return
@@ -89,18 +90,3 @@ export const getSourcesRouter = () => {
 
     return router
 }
-
-// export const getBooksRouter = () => {
-//     const router = express.Router()
-
-//     router
-//         .get('/:id(\\d+)', async (req: TRequestParams<TSourceURIParamsModel>, res: Response<{ title: string }>) => {
-//             res.json({ title: `book id: ${req.params.id}` })
-//         })
-//         .get('/books', async (req: TRequestQuery<TSourceQueryModel>, res: Response<{ title: string }>) => {
-
-//             res.json({ title: 'books' })
-//         })
-
-//     return router
-// }
